@@ -17,6 +17,10 @@ app.get('/api/health', (req, res) => {
 app.use('/api/prompts', promptsRouter);
 app.use('/api/ingest', ingestRouter);
 
-app.listen(PORT, () => {
-    console.log(`PromptVault server running on port ${PORT}`);
-});
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => {
+        console.log(`PromptVault server running on port ${PORT}`);
+    });
+}
+
+export default app;

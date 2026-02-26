@@ -1,16 +1,14 @@
 import { Router } from 'express';
-import { execFile } from 'child_process';
-import { promisify } from 'util';
+import { runIngest } from '../../scripts/ingest.js';
 
-const exec = promisify(execFile);
 const router = Router();
 
 router.post('/', async (req, res) => {
     try {
-        const { stdout } = await exec('node', ['scripts/ingest.js']);
-        res.json({ message: 'Ingest complete', stdout: stdout.trim() });
+        const stats = await runIngest();
+        res.json({ message: 'Ingest complete', ...stats });
     } catch (err) {
-        res.status(500).json({ error: 'Ingest failed', details: err.stderr || err.message });
+        res.status(500).json({ error: 'Ingest failed', details: err.message });
     }
 });
 
