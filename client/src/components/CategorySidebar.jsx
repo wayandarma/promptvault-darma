@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+
 const CATEGORY_COLORS = {
     'Writing & Editing': '#5b9bd5',
     'Development': '#5eb87f',
@@ -22,36 +24,46 @@ export default function CategorySidebar({
     onCategorySelect,
     onTagToggle,
     onFavoritesToggle,
+    isOpen,
+    onClose,
 }) {
     const isAllActive = !activeCategory && !isFavoritesActive;
 
-    return (
-        <aside
-            className="fixed left-0 bottom-0 overflow-y-auto flex flex-col"
-            style={{
-                top: 58,
-                width: 240,
-                background: 'var(--surface)',
-                borderRight: '1px solid var(--border)',
-            }}
-        >
+    // Close sidebar on Escape
+    useEffect(() => {
+        if (!isOpen) return;
+        const handleKey = (e) => { if (e.key === 'Escape') onClose(); };
+        window.addEventListener('keydown', handleKey);
+        return () => window.removeEventListener('keydown', handleKey);
+    }, [isOpen, onClose]);
+
+    // Wrap category/tag/fav clicks to auto-close on mobile
+    const handleCategoryClick = (cat) => {
+        onCategorySelect(cat);
+        onClose();
+    };
+    const handleTagClick = (tag) => {
+        onTagToggle(tag);
+        onClose();
+    };
+    const handleFavClick = () => {
+        onFavoritesToggle();
+        onClose();
+    };
+    const handleAllClick = () => {
+        onCategorySelect('');
+        onClose();
+    };
+
+    const sidebarContent = (
+        <>
             {/* Browse */}
             <div className="px-4 pt-5 pb-2">
                 <h3 className="text-xs font-medium uppercase tracking-wider mb-3" style={{ color: 'var(--muted)' }}>
                     Browse
                 </h3>
-                <NavItem
-                    label="All Prompts"
-                    icon="◈"
-                    isActive={isAllActive}
-                    onClick={() => { onCategorySelect(''); }}
-                />
-                <NavItem
-                    label="Favorites"
-                    icon="♦"
-                    isActive={isFavoritesActive}
-                    onClick={onFavoritesToggle}
-                />
+                <NavItem label="All Prompts" icon="◈" isActive={isAllActive} onClick={handleAllClick} />
+                <NavItem label="Favorites" icon="♦" isActive={isFavoritesActive} onClick={handleFavClick} />
             </div>
 
             <hr className="mx-4 border-0" style={{ borderTop: '1px solid var(--border)' }} />
@@ -68,7 +80,7 @@ export default function CategorySidebar({
                         count={cat.count}
                         color={CATEGORY_COLORS[cat.name] || '#606870'}
                         isActive={activeCategory === cat.name}
-                        onClick={() => onCategorySelect(cat.name)}
+                        onClick={() => handleCategoryClick(cat.name)}
                     />
                 ))}
             </div>
@@ -86,7 +98,7 @@ export default function CategorySidebar({
                         return (
                             <button
                                 key={tag}
-                                onClick={() => onTagToggle(tag)}
+                                onClick={() => handleTagClick(tag)}
                                 className="font-mono text-xs px-2.5 py-1 rounded-md transition-colors cursor-pointer"
                                 style={{
                                     background: isActive ? 'rgba(232,201,122,0.1)' : 'transparent',
@@ -100,7 +112,61 @@ export default function CategorySidebar({
                     })}
                 </div>
             </div>
-        </aside>
+        </>
+    );
+
+    return (
+        <>
+            {/* Desktop sidebar — always visible */}
+            <aside
+                className="hidden lg:flex fixed left-0 bottom-0 overflow-y-auto flex-col"
+                style={{
+                    top: 58,
+                    width: 240,
+                    background: 'var(--surface)',
+                    borderRight: '1px solid var(--border)',
+                }}
+            >
+                {sidebarContent}
+            </aside>
+
+            {/* Mobile overlay */}
+            <div
+                className="lg:hidden fixed inset-0 z-[60]"
+                style={{
+                    background: 'rgba(0,0,0,0.5)',
+                    opacity: isOpen ? 1 : 0,
+                    pointerEvents: isOpen ? 'auto' : 'none',
+                    transition: 'opacity 0.3s ease',
+                }}
+                onClick={onClose}
+            />
+
+            {/* Mobile sidebar — slides in from left */}
+            <aside
+                className="lg:hidden fixed left-0 bottom-0 overflow-y-auto flex flex-col z-[70]"
+                style={{
+                    top: 58,
+                    width: 260,
+                    background: 'var(--surface)',
+                    borderRight: '1px solid var(--border)',
+                    transform: isOpen ? 'translateX(0)' : 'translateX(-100%)',
+                    transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                }}
+            >
+                {/* Close button */}
+                <div className="flex justify-end px-4 pt-3">
+                    <button
+                        onClick={onClose}
+                        className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer transition-colors"
+                        style={{ color: 'var(--muted2)', border: '1px solid var(--border)' }}
+                    >
+                        ✕
+                    </button>
+                </div>
+                {sidebarContent}
+            </aside>
+        </>
     );
 }
 

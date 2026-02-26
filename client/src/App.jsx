@@ -18,6 +18,7 @@ export default function App() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isRefreshing, setIsRefreshing] = useState(false);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [error, setError] = useState(null);
     const [toast, setToast] = useState({ message: '', type: 'success', isVisible: false });
     const toastTimer = useRef(null);
@@ -136,6 +137,7 @@ export default function App() {
                 onAddPrompt={() => setIsModalOpen(true)}
                 onRefresh={handleRefresh}
                 isRefreshing={isRefreshing}
+                onToggleSidebar={() => setIsSidebarOpen(prev => !prev)}
             />
 
             <div className="flex flex-1" style={{ paddingTop: 58 }}>
@@ -147,9 +149,12 @@ export default function App() {
                     onCategorySelect={handleCategorySelect}
                     onTagToggle={handleTagToggle}
                     onFavoritesToggle={handleFavoritesToggle}
+                    isOpen={isSidebarOpen}
+                    onClose={() => setIsSidebarOpen(false)}
                 />
 
-                <main className="flex-1 overflow-y-auto" style={{ marginLeft: 240, padding: 28 }}>
+                <main className="main-content flex-1 overflow-y-auto p-4 lg:p-7">
+                    {/* lg:marginLeft handled via className */}
                     {error && (
                         <div className="text-sm mb-4 px-4 py-3 rounded-lg" style={{ color: '#c46a6a', background: 'rgba(196,106,106,0.1)', border: '1px solid rgba(196,106,106,0.3)' }}>
                             {error}
@@ -176,7 +181,7 @@ export default function App() {
                         <>
                             <div
                                 className="grid gap-3.5"
-                                style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))' }}
+                                style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))' }}
                             >
                                 {prompts.map(p => (
                                     <PromptCard

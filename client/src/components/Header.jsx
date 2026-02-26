@@ -1,6 +1,6 @@
 import { useRef, useEffect } from 'react';
 
-export default function Header({ total, search, onSearch, onAddPrompt, onRefresh, isRefreshing }) {
+export default function Header({ total, search, onSearch, onAddPrompt, onRefresh, isRefreshing, onToggleSidebar }) {
     const inputRef = useRef(null);
 
     useEffect(() => {
@@ -27,6 +27,19 @@ export default function Header({ total, search, onSearch, onAddPrompt, onRefresh
                 borderBottom: '1px solid var(--border)',
             }}
         >
+            {/* Hamburger — mobile only */}
+            <button
+                onClick={onToggleSidebar}
+                className="lg:hidden w-8 h-8 rounded-lg flex items-center justify-center shrink-0 cursor-pointer"
+                style={{ color: 'var(--muted2)', border: '1px solid var(--border)' }}
+            >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                    <line x1="3" y1="6" x2="21" y2="6" />
+                    <line x1="3" y1="12" x2="21" y2="12" />
+                    <line x1="3" y1="18" x2="21" y2="18" />
+                </svg>
+            </button>
+
             {/* Logo */}
             <div className="flex items-center gap-2.5 shrink-0">
                 <div
@@ -35,7 +48,7 @@ export default function Header({ total, search, onSearch, onAddPrompt, onRefresh
                 >
                     P
                 </div>
-                <span className="font-serif text-xl tracking-tight" style={{ color: 'var(--text)' }}>
+                <span className="hidden sm:inline font-serif text-xl tracking-tight" style={{ color: 'var(--text)' }}>
                     Prompt<span style={{ color: 'var(--accent)' }}>Vault</span>
                 </span>
             </div>
@@ -75,7 +88,7 @@ export default function Header({ total, search, onSearch, onAddPrompt, onRefresh
             {/* Right actions */}
             <div className="flex items-center gap-3 shrink-0">
                 <span
-                    className="text-xs font-mono px-2.5 py-1 rounded-full"
+                    className="hidden sm:inline text-xs font-mono px-2.5 py-1 rounded-full"
                     style={{ background: 'var(--surface)', color: 'var(--muted2)', border: '1px solid var(--border)' }}
                 >
                     {total.toLocaleString()}
@@ -107,7 +120,7 @@ export default function Header({ total, search, onSearch, onAddPrompt, onRefresh
                         <line x1="12" y1="5" x2="12" y2="19" />
                         <line x1="5" y1="12" x2="19" y2="12" />
                     </svg>
-                    Add Prompt
+                    <span className="hidden sm:inline">Add Prompt</span>
                 </button>
             </div>
         </header>
