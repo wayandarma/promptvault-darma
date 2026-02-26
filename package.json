@@ -1,0 +1,20 @@
+{
+    "name": "promptvault",
+    "version": "1.0.0",
+    "type": "module",
+    "private": true,
+    "scripts": {
+        "setup": "node scripts/ingest.js",
+        "server": "node server/index.js",
+        "client": "cd client && npm install && npm run dev",
+        "dev": "concurrently \"npm run server\" \"npm run client\" --names \"API,UI\" --prefix-colors \"cyan,magenta\""
+    },
+    "dependencies": {
+        "better-sqlite3": "^11.0.0",
+        "concurrently": "^9.0.0",
+        "cors": "^2.8.5",
+        "csv-parse": "^5.5.0",
+        "dotenv": "^16.4.0",
+        "express": "^4.21.0"
+    }
+}
